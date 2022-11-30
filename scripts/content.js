@@ -50,8 +50,11 @@ const main = async () => {
 
     const commitMessage = scoreText + inputCommitMessage ? ', ' + inputCommitMessage.trim() : '';
     alert(commitMessage)
-    alert(commitCode)
     // 수동으로 accessToken을 등록하게 한다.
+    chrome.runtime.sendMessage({ action: "FINISH" }, function (response) {
+      alert(response);
+      console.log(response);
+    });
 
     window.open('https://www.github.com/login', '_blank').focus();
     // https://api.github.com/repos/OWNER/REPO/commits

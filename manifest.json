@@ -12,5 +12,9 @@
       "matches": ["https://urclass.codestates.com/codeproblem/*"]
     }
   ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
   "permissions": ["storage"]
 }
