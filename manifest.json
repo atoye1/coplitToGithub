@@ -4,12 +4,13 @@
   "version": "1.0",
   "description": "Automatically commit coplit codes to github after submission",
   "action": {
-    "default_popup": "hello.html"
+    "default_popup": "./popup.html"
   },
   "content_scripts": [
     {
       "js": ["scripts/content.js"],
       "matches": ["https://urclass.codestates.com/codeproblem/*"]
     }
-  ]
+  ],
+  "permissions": ["storage"]
 }
