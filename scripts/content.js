@@ -45,18 +45,18 @@ const main = async () => {
       alert('채점후에 커밋하세요!')
       return;
     }
-    const commitCode = localStorage.getItem(problemHash);
+    const fileName = document.querySelector('span.problem-title').textContent + '.js';
+    const fileContent = localStorage.getItem(problemHash);
     const inputCommitMessage = '커스텀 인풋메시지 입니다. 나중에 입력가능하게 바뀝니다.';
-
     const commitMessage = scoreText + inputCommitMessage ? ', ' + inputCommitMessage.trim() : '';
     alert(commitMessage)
     // 수동으로 accessToken을 등록하게 한다.
-    chrome.runtime.sendMessage({ action: "FINISH" }, function (response) {
+
+    chrome.runtime.sendMessage({ action: "Commit", fileName, fileContent, commitMessage }, function (response) {
       alert(response);
       console.log(response);
     });
 
-    window.open('https://www.github.com/login', '_blank').focus();
     // https://api.github.com/repos/OWNER/REPO/commits
 
     // 리퀘스트를 보내서 리포가 있으면 계속하고, 없으면 만든다.

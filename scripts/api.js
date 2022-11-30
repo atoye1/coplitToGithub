@@ -2,6 +2,8 @@
 //   var fetch = require('node-fetch');
 // }
 
+// const accessToken = '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';
+
 const checkRepoExists = async (userName = 'atoye1', repoTitle = 'coplit') => {
   const url = `https://api.github.com/repos/${userName}/${repoTitle}`;
   try {
@@ -19,9 +21,8 @@ const checkRepoExists = async (userName = 'atoye1', repoTitle = 'coplit') => {
   }
 }
 
-const createRepo = async (repoTitle) => {
+const createRepo = async (repoTitle, accessToken) => {
   const url = 'https://api.github.com/user/repos';
-  const accessToken = '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';
   const data = {
     name: repoTitle,
     type: 'public'
@@ -42,8 +43,7 @@ const createRepo = async (repoTitle) => {
 }
 
 const checkFileExists = async (userName = 'atoye1', repoTitle = 'coplit', fileName = '05_tiling.js') => {
-  const url = `https://api.github.com/repos/${userName}/${repoTitle}/${fileName}`;
-  const accessToken = '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';
+  const url = `https://api.github.com/repos/${userName}/${repoTitle}/contents/${fileName}`;
   try {
     const result = await fetch(url, {
       method: 'GET',
@@ -51,22 +51,24 @@ const checkFileExists = async (userName = 'atoye1', repoTitle = 'coplit', fileNa
         'Accept': 'application/vnd.github+json'
       },
     })
-    console.log(`${fileName} exists`)
-    return true;
+    const checkResult = await result.json();
+    if (checkResult.name === fileName) {
+      return true;
+    } else {
+      return false;
+    }
   } catch (err) {
     console.log(`${fileName} NOT exists`)
     return false;
   }
 }
 
-const createNewFile = async (userName = 'atoye1', repoTitle = 'coplit', fileName = '05_tiling61200.js') => {
+const createNewFile = async (userName, repoTitle, fileName, fileContent, commitMessage, accessToken) => {
   const url = `https://api.github.com/repos/${userName}/${repoTitle}/contents/${fileName}`;
-  const accessToken = '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';
-  let content = '05_tiling, it should be base64 encoded for request, second commit'
-  content = btoa(content);
+  const encodedContent = btoa(unescape(encodeURIComponent(fileContent)));
   const data = {
-    "message": `Creating ${fileName} 2`,
-    content
+    "message": `Creating ${fileName}\n${commitMessage}`,
+    "content": encodedContent
   }
   try {
     const result = await fetch(url, {
@@ -86,9 +88,8 @@ const createNewFile = async (userName = 'atoye1', repoTitle = 'coplit', fileName
   }
 }
 
-const createCommit = async (userName = 'atoye1', repoTitle = 'coplit', fileName = '05_tiling.js') => {
+const createCommit = async (userName, repoTitle, fileName, fileContent, commitMessage, accessToken) => {
   const checkingUrl = `https://api.github.com/repos/${userName}/${repoTitle}/commits`
-  const accessToken = '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';
   try {
     const checkResult = await fetch(checkingUrl, {
       method: 'GET',
@@ -120,12 +121,11 @@ const createCommit = async (userName = 'atoye1', repoTitle = 'coplit', fileName 
 
     // sha value found! moving to commit logics
     const url = `https://api.github.com/repos/${userName}/${repoTitle}/contents/${fileName}`;
-    let content = '05_tiling, it should be base64 encoded for request, second commit'
-    content = btoa(content);
+    const encodedContent = btoa(unescape(encodeURIComponent(fileContent)));
 
     const data = {
-      "message": `Updating ${fileName}`,
-      content,
+      "message": `Updating ${fileName}\n${commitMessage}`,
+      "content": encodedContent,
       sha: fileSha,
     }
 

@@ -1,6 +1,7 @@
 document.getElementById('saveBtn').addEventListener('click', e => {
   e.preventDefault();
   const accessToken = document.getElementById('accessToken').value;
+  const userName = document.getElementById('userName').value;
   localStorage.setItem('accessToken', accessToken);
   var test_statement = document.createElement('h1')
   test_statement.textContent = accessToken
