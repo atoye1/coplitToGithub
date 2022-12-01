@@ -1,13 +1,5 @@
 import { checkRepoExists, checkFileExists, createNewFile, createRepo, createCommit } from './scripts/api.js';
 
-// chrome.runtime.onInstalled.addListener(() => {
-//   chrome.contextMenu.create({
-//     "id": "sampleContextMenu",
-//     "title": "Sample Context Menu",
-//     "contexts": ["selection"],
-//   });
-// });
-
 chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
   console.log(sender.tab ?
     "from a content script:" + sender.tab.url :

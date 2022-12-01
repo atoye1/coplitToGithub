@@ -3,31 +3,47 @@
     <meta charset="utf-8" />
   </head>
   <body>
-    <h1>Coplit To git by Donghun Seol</h1>
-    <h2>https://www.github.com/atoye1</h2>
+    <h1>
+      <span style="color: rgb(64, 0, 199)">Coplit</span> to
+      <span style="color: #24292f">Github</span>
+    </h1>
+    <p>made with ❤️ by Donghun Seol</p>
+    <p>
+      <a href="https://www.github.com/atoye1">https://www.github.com/atoye1</a>
+    </p>
     <div id="main" class="container">
       <div id="disclaimer">
-        <p>
-          코플릿 채점결과를 내 깃 저장소에 자동으로 커밋해주는 크롬 익스텐션
-          입니다.
-        </p>
+        <p>코플릿 코드를 깃헙에 자동으로 커밋해주는 크롬 익스텐션 입니다.</p>
         <p>깃허브 api를 이용하므로, 깃헙 아이디와 accessToken이 필요합니다.</p>
         <p>아래에 깃헙 아이디와 accessToken을 입력하고 저장버튼을 눌러주세요</p>
-        <p>데이터는 로컬 스토리지에 저장됩니다.</p>
+        <p>모든 요청과 데이터는 로컬환경에서 처리됩니다.</p>
+
+        <p>
+          배포후 의견을 수렴하여 OAuth로 익스텐션에서 바로 로그인 하는 기능을
+          구현해볼 예정입니다.
+        </p>
       </div>
       <div id="form">
         <form action="">
-          <input type="text" name="" id="userName" placeholder="Github ID" />
+          <input
+            type="text"
+            name=""
+            id="userName"
+            placeholder="Github ID"
+            required="true"
+          />
           <input
             type="text"
             name=""
             id="accessToken"
             placeholder="Github Access Token"
+            required="true"
           />
           <button type="submit" id="saveBtn">save</button>
         </form>
       </div>
-      <div id="state">
+      <div id="status">
+        <h3 id="health"></h3>
         <p></p>
       </div>
     </div>

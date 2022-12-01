@@ -1,52 +1,56 @@
-const DATABASE = 'coplitToGithub';
-const DB_VERSION = 1;
-const DB_STORE_NAME = 'auth';
-
-var db;
-
-openDB = () => {
-  // DB 생성
-  var req = indexedDB.open(DATABASE, DB_VERSION);
-
-  // DB 생성 성공
-  req.onsuccess = function (evt) {
-    db = this.result;
-  };
-  // DB 생성 오류
-  req.onerror = function (evt) {
-    console.error("indexedDB : ", evt.target.errorCode);
-  };
-  // DB 초기화
-  req.onupgradeneeded = function (evt) {
-    var store = evt.currentTarget.result.createObjectStore(DB_STORE_NAME,
-      { keyPath: 'userName', autoIncrement: false });
-
-    store.createIndex('userName', 'userName', { unique: true });
-    store.createIndex('accessToken', 'accessToken', { unique: true });
-    store.createIndex('timeStamp', 'timeStamp', { unique: false });
-  };
+const checkAuthData = async () => {
+  try {
+    const auth = await chrome.storage.local.get("auth");
+    const accessToken = auth.auth.accessToken;
+    const userName = auth.auth.userName;
+    if (!auth || !userName || !accessToken) return false;
+    console.log('at, username', accessToken, userName);
+    return true;
+  } catch (err) {
+    console.error(err)
+  }
 }
 
-// openDB()
-// this transaction worksFine
-// var transaction = db.transaction("auth", "readwrite").objectStore("auth").add(payload);
+const verifyToken = async () => {
+  // fetch로 해당 유저네임과 액세스토큰이 맞는지 검증한다.
+  // test stub return value;
+  return true;
+}
+
+const updateStatus = async () => {
+  const health = document.getElementById('health');
+  health.innerText = '';
+  health.style.color = 'black';
+  if (!await checkAuthData()) {
+    health.innerText = '저장된 인증 정보가 없습니다. username과 accessToken을 입력하세요'
+    health.style.color = 'red';
+    return;
+  }
+  const auth = await chrome.storage.local.get("auth");
+  const accessToken = auth.auth.accessToken;
+  const userName = auth.auth.userName;
+  if (!await verifyToken()) {
+    health.innerText = `저장된 인증정보가 유효하지 않습니다. 유저 ${userName}과 accessToken이 유효한지 확인하세요`;
+    health.style.color = 'red';
+    return;
+  }
+  health.innerText = `아이디 ${userName} 정상 작동 중\n 깃헙 API 사용가능합니다.\n 이제 코플릿에서 커밋해보세요.`
+  health.style.color = 'green';
+}
 
 document.getElementById('saveBtn').addEventListener('click', async (e) => {
-
   e.preventDefault();
-  const accessToken = document.getElementById('accessToken').value;
-  const userName = document.getElementById('userName').value;
+  const accessToken = document.getElementById('accessToken').value.trim();
+  const userName = document.getElementById('userName').value.trim();
+  document.getElementById('accessToken').value = '';
+  document.getElementById('userName').value = '';
+
   await chrome.storage.local.set({
     "auth": {
       "accessToken": accessToken,
       "userName": userName,
     }
   })
-  const result = await chrome.storage.local.get("auth")
-  console.log(result);
-
-  //TODO: remove below on production
-  var test_statement = document.createElement('h1')
-  test_statement.textContent = accessToken
-  document.getElementById('main').appendChild(test_statement);
+  updateStatus();
 })
+updateStatus();
