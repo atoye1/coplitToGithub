@@ -1,9 +1,3 @@
-// if (typeof window === 'undefined') {
-//   var fetch = require('node-fetch');
-// }
-
-// const accessToken = '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';
-
 const checkRepoExists = async (userName = 'atoye1', repoTitle = 'coplit') => {
   const url = `https://api.github.com/repos/${userName}/${repoTitle}`;
   try {

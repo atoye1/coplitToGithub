@@ -14,7 +14,26 @@ const checkAuthData = async () => {
 const verifyToken = async () => {
   // fetch로 해당 유저네임과 액세스토큰이 맞는지 검증한다.
   // test stub return value;
-  return true;
+  const auth = await chrome.storage.local.get("auth");
+  const accessToken = auth.auth.accessToken;
+  const userName = auth.auth.userName;
+  const verificationUrl = 'https://api.github.com/user';
+
+  const verificationResult = await fetch(verificationUrl, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/vnd.github+json',
+      'Authorization': `Bearer ${accessToken}`
+    }
+  })
+
+  const parsedResult = await verificationResult.json();
+  console.log(parsedResult);
+  if (parsedResult.login === userName) {
+    return true;
+  } else {
+    return false
+  }
 }
 
 const updateStatus = async () => {
