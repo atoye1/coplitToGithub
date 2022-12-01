@@ -13,7 +13,12 @@ const checkRepoExists = async (userName = 'atoye1', repoTitle = 'coplit') => {
         'Accept': 'application/vnd.github+json'
       },
     })
-    console.log('exists')
+    const resultData = await result.json();
+    if (resultData.message === 'Not Found') {
+      console.log('repo NOT exists')
+      return false;
+    }
+    console.log('repo already exists')
     return true;
   } catch (err) {
     console.log('NOT exists')
@@ -80,7 +85,9 @@ const createNewFile = async (userName, repoTitle, fileName, fileContent, commitM
       body: JSON.stringify(data)
     })
     const responseData = await result.json();
-    console.log(responseData.commit.sha);
+    if (responseData.commit === undefined) {
+      throw new Error('no valid response found for creating new file')
+    }
     return responseData;
   } catch (err) {
     console.error(err)

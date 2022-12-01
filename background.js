@@ -13,25 +13,40 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     "from a content script:" + sender.tab.url :
     "from the extension");
 
-  if (request.action === "FINISH")
-    sendResponse("goodbye");
-  if (request.action === "token") {
-    sendResponse(localStorage.getItem('accessToken'))
-  }
   if (request.action === "Commit") {
-    const accessToken = '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'; // TODO make variable
-    const userName = 'atoye1'; // TODO make variable
-    const repoTitle = 'coplit'; // TODO make variable
-    const { fileName, fileContent, commitMessage } = request;
-    const isRepoExists = await checkRepoExists(userName, repoTitle)
-    if (!isRepoExists) {
-      await createRepo(repoTitle, accessToken);
-    }
-    const isFileExists = await checkFileExists(userName, repoTitle, fileName);
-    if (!isFileExists) {
-      await createNewFile(userName, repoTitle, fileName, fileContent, commitMessage, accessToken);
-    } else {
-      await createCommit(userName, repoTitle, fileName, fileContent, commitMessage, accessToken);
+    try {
+      console.log('Commit action triggerd');
+      const auth = await chrome.storage.local.get("auth")
+      if (!auth) {
+        console.log('access token and user name NOT found!');
+        sendResponse("NO ACCESS TOKEN or USERNAME PROVIDED")
+        return;
+      }
+      console.log(auth);
+      const accessToken = auth.auth.accessToken;
+      const userName = auth.auth.userName;
+      console.log('access token and user name found!', accessToken, userName);
+      const repoTitle = 'coplit'; // TODO make variable
+      const { fileName, fileContent, commitMessage } = request;
+      const isRepoExists = await checkRepoExists(userName, repoTitle)
+      if (!isRepoExists) {
+        console.log('repo not exist, creating repo')
+        await createRepo(repoTitle, accessToken);
+      }
+      const isFileExists = await checkFileExists(userName, repoTitle, fileName);
+      if (!isFileExists) {
+        console.log('file not exist, creating ne file')
+        await createNewFile(userName, repoTitle, fileName, fileContent, commitMessage, accessToken);
+      } else {
+        console.log('file exists, creating new commit')
+        await createCommit(userName, repoTitle, fileName, fileContent, commitMessage, accessToken);
+      }
+      console.log("all process done");
+      sendResponse("done");
+      return;
+    } catch (err) {
+      console.error(err)
+      return;
     }
   }
 });

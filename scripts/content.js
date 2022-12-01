@@ -29,17 +29,7 @@ const main = async () => {
 
   btnGroup.appendChild(githubBtn);
 
-  // if (!submitBtn) {
-  //   location.reload();
-  //   alert('no submitBtn found')
-  // } else {
-  //   alert('adding submit eventlistener')
-  //   submitBtn.addEventListener('click', () => {
-  //     /* github api fetch or save code to some variable*/
-  //     alert(`this code will be saved\n\n\n ${localStorage.getItem(problemId)}`);
-  //   })
-  // }
-  githubBtn.addEventListener('click', () => {
+  githubBtn.addEventListener('click', async () => {
     const scoreText = document.querySelector('div.codeproblem-console-content > div > div')?.textContent;
     if (scoreText === undefined || scoreText === '테스트 결과가 없습니다.') {
       alert('채점후에 커밋하세요!')
@@ -52,35 +42,24 @@ const main = async () => {
     alert(commitMessage)
     // 수동으로 accessToken을 등록하게 한다.
 
-    chrome.runtime.sendMessage({ action: "Commit", fileName, fileContent, commitMessage }, function (response) {
+    const response = await chrome.runtime.sendMessage({ action: "Commit", fileName, fileContent, commitMessage });
+    alert(response);
+  })
+
+  const storageTest = document.createElement('button');
+  storageTest.textContent = "StorageTest"
+  storageTest.classList = submitBtn.classList;
+  storageTest.style = submitBtn.style;
+  storageTest.style.backgroundColor = 'skyblue';
+  storageTest.id = "storageTest";
+  btnGroup.appendChild(storageTest);
+
+  storageTest.addEventListener('click', () => {
+    chrome.runtime.sendMessage({ action: "StorageTest" }, function (response) {
       alert(response);
       console.log(response);
     });
-
-    // https://api.github.com/repos/OWNER/REPO/commits
-
-    // 리퀘스트를 보내서 리포가 있으면 계속하고, 없으면 만든다.
-    const githubKey = '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';
-    const url = 'https://api.github.com/repos/atoye1/coplit'
-    fetch(url, {
-      method: 'GET',
-      mode: 'cors',
-      headers: {
-        'Accept': 'application/vnd.github+json',
-        'Authorization': `Bearer ${githubKey}`,
-      }
-    })
-      .then(response => {
-        console.log(response.body);
-        console.log(response.body.toString());
-        console.log('fetch response', JSON.parse(response.body))
-      })
-      .catch(response => console.log('fetch error', response))
-
-    // response.body가 Readable stream 으로 나오므로, 파싱해야됨.
   })
-
-
 }
 
 main();
@@ -90,12 +69,3 @@ const mainInterval = setInterval(() => {
     main();
   }
 }, 2000);
-// personal access token
-// check if repo exists
-// if not make repo
-// setup post url
-
-// make branch main
-// if there is repo post file
-// if no file create file
-// if there is file commit with

@@ -3,6 +3,11 @@
   "name": "Coplit To Git",
   "version": "1.0",
   "description": "Automatically commit coplit codes to github after submission",
+  "icons": {
+    "16": "codeStates.png",
+    "48": "codeStates.png",
+    "128": "codeStates.png"
+  },
   "action": {
     "default_popup": "./popup.html"
   },
